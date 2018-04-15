@@ -1,0 +1,7 @@
+.serverless
+pacts
+node_modules
+*.log
+coverage
+bin
+
