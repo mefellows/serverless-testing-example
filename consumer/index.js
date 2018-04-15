@@ -17,22 +17,22 @@ const handler = (event, context, callback) => {
   });
 };
 
-let eventCount = 0;
+let tweetCount = 0;
 
 // Actual consumer code, has no Lambda/AWS/Protocol specific stuff
 // This is the thing we test in the Consumer Pact tests
 const consumeEvent = (event) => {
-  console.log('consuming event', event)
+  console.log('consuming tweets', event)
 
-  if (!event || !event.id) {
+  if (!event) {
     throw new Error("Invalid event, missing fields")
   }
 
   // You'd normally do something useful, like process it
   // and save it in Dynamo
-  console.log('Event count:', ++eventCount);
+  console.log('Event count:', ++tweetCount);
 
-  return eventCount;
+  return tweetCount;
 }
 
 module.exports = {
