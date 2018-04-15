@@ -18,11 +18,14 @@ provider:
     TWITTER_CONSUMER_SECRET: ${env:TWITTER_CONSUMER_SECRET}
     TWITTER_ACCESS_TOKEN: ${env:TWITTER_ACCESS_TOKEN}
     TWITTER_ACCESS_TOKEN_SECRET: ${env:TWITTER_ACCESS_TOKEN_SECRET}
+  events:
+    - schedule: rate(1 minute)
 
 package:
   individually: true
   exclude:
-    - node_modules/@pact*
+    - "node_modules/@pact-foundation/**"
+    - "node_modules/aws-sdk/**"
 
 functions:
   provider:

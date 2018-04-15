@@ -35,6 +35,12 @@ Lambda function that reads from the SNS topic and processes the data - by increm
 
 ```
 npm i
+# Update as per your own Twitter account
+export TWITTER_CONSUMER_KEY=<INSERT HERE>
+export TWITTER_CONSUMER_SECRET=<INSERT HERE>
+export TWITTER_ACCESS_TOKEN=<INSERT HERE>
+export TWITTER_ACCESS_TOKEN_SECRET=<INSERT HERE>
+
 ```
 
 ## Test Services with Pact
