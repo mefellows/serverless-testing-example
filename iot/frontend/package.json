@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "angular": "~1.4.8",
     "bootstrap": "^3.3.7",
+    "crypto-js": "^3.1.9-1",
     "guid": "0.0.12",
+    "moment": "2.11.1",
     "mqtt": "^2.7.2",
     "react": "^15.5.4",
     "react-bootstrap": "^0.31.0",
@@ -20,6 +23,6 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": "https://fn6ny4k8ca.execute-api.us-east-1.amazonaws.com/dev/iot-presigned-url",
-  "proxy-local": "http://localhost:8080"
+  "proxy-remote": "https://fn6ny4k8ca.execute-api.us-east-1.amazonaws.com/dev/iot-presigned-url",
+  "proxy": "http://localhost:8080"
 }

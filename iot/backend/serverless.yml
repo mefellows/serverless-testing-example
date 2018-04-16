@@ -20,7 +20,7 @@ provider:
   name: aws
   runtime: nodejs6.10
   stage: dev
-  region: eu-west-1 # Set your AWS region here
+  region: us-east-1 # Set your AWS region here
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -37,10 +37,14 @@ functions:
     handler: src/iotPresignedUrl.handler
     timeout: 30
     events:
-      - http: OPTIONS /iot-presigned-url
+      - http:
+          method: OPTIONS
+          path: /iot-presigned-url
+          cors: true
       - http:
           method: GET
           path: /iot-presigned-url
+          cors: true
     environment:
       IOT_AWS_REGION: 'us-east-1'
       IOT_ENDPOINT_HOST: 'a2m1zb7kg84sa4.iot.us-east-1.amazonaws.com'
@@ -55,3 +59,8 @@ functions:
     environment:
       IOT_AWS_REGION: 'us-east-1'
       IOT_ENDPOINT_HOST: 'a2m1zb7kg84sa4.iot.us-east-1.amazonaws.com'
+
+package:
+  individually: true
+  exclude:
+    - "node_modules/aws-sdk/**"
