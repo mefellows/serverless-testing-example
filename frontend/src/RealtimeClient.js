@@ -28,8 +28,8 @@ export default (clientId, username) => {
 
   const clientWrapper = {};
   clientWrapper.connect = () => {
-    // return request('https://fn6ny4k8ca.execute-api.us-east-1.amazonaws.com/dev/iot-presigned-url')
-    return request('/iot-presigned-url')
+    return request('https://mnf6r7nai4.execute-api.us-east-1.amazonaws.com/dev/iot-presigned-url')
+      // return request('/iot-presigned-url')
       .then(response => {
         console.log(response);
 

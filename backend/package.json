@@ -1,0 +1,25 @@
+{
+  "name": "serverless-demo",
+  "version": "1.0.0",
+  "description": "Demo of the serverless NodeJS app",
+  "license": "MIT",
+  "scripts": {
+    "clean": "if [ -d 'pacts' ]; then rm -rf pacts; fi",
+    "test:pact": "npm run clean && mocha src/**/*.spec.js",
+    "test:publish": "node ../publish.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.218.1",
+    "aws-signature-v4": "^1.1.0",
+    "crypto": "0.0.3",
+    "crypto-js": "^3.1.9-1",
+    "moment": "2.11.1",
+    "twit": "^2.2.9"
+  },
+  "devDependencies": {
+    "serverless-offline": "^3.14.0",
+    "@pact-foundation/pact": "^6.0.0-alpha.8",
+    "chai": "^3.5.0",
+    "mocha": "^3.5.3"
+  }
+}

@@ -13,13 +13,19 @@
     "superagent": "^3.5.2"
   },
   "devDependencies": {
-    "react-scripts": "1.0.5"
+    "react-scripts": "1.0.5",
+    "@pact-foundation/pact": "^6.0.0-alpha.8",
+    "chai": "^3.5.0",
+    "mocha": "^3.5.3"
   },
   "scripts": {
+    "clean": "if [ -d 'pacts' ]; then rm -rf pacts; fi",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test:pact": "npm run clean && mocha tests/*.spec.js",
+    "test:publish": "node ../publish.js"
   },
   "proxy-remote": "https://fn6ny4k8ca.execute-api.us-east-1.amazonaws.com/dev/iot-presigned-url",
   "proxy": "http://localhost:8080"

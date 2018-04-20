@@ -1,8 +1,0 @@
-node_modules
-build
-.serverless
-.DS_Store
-.env
-.idea
-.vscode
-npm-debug.log

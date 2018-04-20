@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS Summiteers Web Stack
+Parameters:
+  S3BucketName:
+    Type: String
+    Description: S3 Bucket Name to deploy to
+    Default: aws-summiteers
+Resources:
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref 'S3BucketName'
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+      Tags:
+        - Key: Owner
+          Value: Matt Fellows
+        - Key: Name
+          Value: aws-summiteers
+Outputs:
+  WebsiteURL:
+    Description: S3 Bucket Website URL
+    Value: !GetAtt 'WebsiteBucket.WebsiteURL'

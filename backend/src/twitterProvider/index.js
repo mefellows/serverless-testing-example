@@ -17,10 +17,10 @@ const tableName = 'checkpoint';
 const count = 10;
 let lastItem = null;
 
-// Consumer handler, responsible for extracting message from SNS
-// and dealing with lambda-related things.
+// Provider handler. Runs on a scheduled basis, extracting from Twitter
+// and sending data to an SNS queue
 const handler = (event, context, callback) => {
-  console.log("Received event from SNS");
+  console.log("Running Twitter scraper");
 
   // 1. Check last dynamodb record, if empty we'll set it in a minute
   const search = {

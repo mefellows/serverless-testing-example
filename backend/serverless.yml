@@ -1,0 +1,87 @@
+# Serverless SNS
+service: aws-meetup-serverless
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: dev
+  region: us-east-1 # Set your AWS region here
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "iot:Connect"
+        - "iot:Publish"
+        - "iot:Subscribe"
+        - "iot:Receive"
+        - "iot:GetThingShadow"
+        - "iot:UpdateThingShadow"
+      Resource: "*"
+    - Effect: "Allow"
+      Resource: "*"
+      Action:
+        - "sns:*"
+        - "dynamodb:*"
+  environment:
+    TOPIC_ARN: { "Fn::Join":  ["", ["arn:aws:sns:us-east-1:", { "Ref": "AWS::AccountId" }, ":pact-events"] ] }
+    MAGIC_KEYWORD: "#AWSSummit"
+    # NOTE: These must be present in your shell!
+    TWITTER_CONSUMER_KEY: ${env:TWITTER_CONSUMER_KEY}
+    TWITTER_CONSUMER_SECRET: ${env:TWITTER_CONSUMER_SECRET}
+    TWITTER_ACCESS_TOKEN: ${env:TWITTER_ACCESS_TOKEN}
+    TWITTER_ACCESS_TOKEN_SECRET: ${env:TWITTER_ACCESS_TOKEN_SECRET}
+    IOT_AWS_REGION: 'us-east-1'
+    IOT_ENDPOINT_HOST: '${env:IOT_ENDPOINT_HOST}'
+    IOT_ACCESS_KEY: '${env:IOT_ACCESS_KEY}'
+    IOT_SECRET_KEY: '${env:IOT_SECRET_KEY}'
+
+functions:
+  provider:
+    handler: src/twitterProvider.handler
+    events:
+      - schedule: rate(1 minute)
+  consumer:
+    handler: src/twitterPush.handler
+    events:
+      - sns: pact-events
+  iotPresignedUrl:
+    handler: src/iotPresignedUrl.handler
+    timeout: 30
+    events:
+      - http:
+          method: OPTIONS
+          path: /iot-presigned-url
+          cors: true
+      - http:
+          method: GET
+          path: /iot-presigned-url
+          cors: true
+  notifyDisconnect:
+    handler: src/iotNotifyDisconnect.handler
+    timeout: 30
+    events:
+      - iot:
+          sql: "SELECT * FROM 'last-will'"
+
+package:
+  individually: true
+  exclude:
+    - "node_modules/aws-sdk/**"
+
+resources:
+  Resources:
+    checkpointTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: checkpoint
+        AttributeDefinitions:
+          - AttributeName: Type
+            AttributeType: S
+        KeySchema:
+          - AttributeName: Type
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

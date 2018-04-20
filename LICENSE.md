@@ -1,6 +1,9 @@
 MIT License
 
-Copyright (c) 2017 GetTechTalent
+Copyright (c) 2018 Matt Fellows
+
+Combined with modified work from copyright (c) 2017 GetTechTalent at
+https://github.com/gettechtalent/iot-serverless-websockets-react-boilerplate
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

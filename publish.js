@@ -1,7 +1,8 @@
 const pact = require('@pact-foundation/pact-node')
 const path = require('path')
+
 const opts = {
-  pactFilesOrDirs: [path.resolve(__dirname, 'pacts/')],
+  pactFilesOrDirs: [path.resolve(__dirname, 'frontend/pacts/'), path.resolve(__dirname, 'backend/pacts/')],
   pactBroker: 'https://test.pact.dius.com.au',
   pactBrokerUsername: 'dXfltyFMgNOFZAxr8io9wJ37iUpY42M',
   pactBrokerPassword: 'O5AIZWxelWbLvqMd8PkAVycBJh2Psyg1',
