@@ -17,22 +17,23 @@ body {
   margin: 0px !important;
 }
 
-#sidebar-wrapper {
+.sidebar-wrapper {
   height: 100%;
   padding: 0px;
   position: fixed;
   border-right: 1px solid lightgray;
+  border-left: 1px solid lightgray;
   width: 23%;
 }
 
-#sidebar {
+.sidebar {
   position: relative;
   height: 100%;
   overflow-x: hidden;
   overflow-y: scroll;
 }
 
-#sidebar .list-group-item {
+.sidebar .list-group-item {
   border-radius: 0;
   border-style: solid;
   border-color: lightgray;

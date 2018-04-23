@@ -26,15 +26,61 @@ const User = (user) => (
     <ListGroupItem key={user.clientId}>{ user.username }</ListGroupItem>
 )
 
+const SentimentItem = (sentiment) => (
+    <ListGroupItem key={sentiment.key}>{ sentiment.val }</ListGroupItem>
+)
+
 const Users = ({ users }) => (
-    <div id="sidebar-wrapper">
-        <div id="sidebar">
-            <ListGroup>
-                <ListGroupItem key='title'><i>Connected users</i></ListGroupItem>
-                { users.map(User) }
-            </ListGroup>
-        </div>
-    </div>
+    <ListGroup>
+        <ListGroupItem key='title'><i>Connected users</i></ListGroupItem>
+        { users.map(User) }
+    </ListGroup>
+);
+
+const Sentiment = ({ sentiment }) => {
+  const mapping = {
+    "Positive": "😁",
+    "Negative": "😞",
+    "Neutral": "🤷‍♀️",
+    "Mixed": "😭 + 🤣",
+  };
+  const status = {
+    key: "Positive",
+    score: 0,
+    val: mapping["Positive"]
+  };
+
+  for (var key in sentiment) {
+    if (sentiment.hasOwnProperty(key)) {
+      if (sentiment[key] > status.score) {
+        status.key = key;
+        status.score = sentiment[key];
+        status.val = mapping[key];
+      }
+    }
+  }
+
+  return (
+    <ListGroup>
+        <ListGroupItem key='title'><i>Tweet sentiment</i></ListGroupItem>
+        { SentimentItem(status) }
+    </ListGroup>);
+}
+
+const Tweet = (tweet) => {
+  console.log(tweet)
+  return (
+    <ListGroupItem key={tweet.id}><b>{tweet.user.screen_name}</b> : {tweet.text}</ListGroupItem>
+  );
+}
+
+const Tweets = ({ tweets }) => (
+  <div id="Tweets">
+      <ListGroup>
+          <ListGroupItem key='title'><i>Tweet Stream</i></ListGroupItem>
+          { tweets.map(Tweet) }
+      </ListGroup>
+  </div>
 );
 
 const Message = (message) => (
@@ -54,7 +100,7 @@ const ChatHeader = ({ isConnected }) => (
     <Navbar fixedTop>
         <Navbar.Header>
             <Navbar.Brand>
-                Serverless IoT chat demo
+                AWS Summit Meetup Lounge
             </Navbar.Brand>
         </Navbar.Header>
         <Nav>
@@ -89,19 +135,35 @@ const ChatInput = ({ onSend }) => {
     );
 };
 
-const ChatWindow = ({ users, messages, onSend }) => (
+const ChatWindow = ({ tweets, sentiment, users, messages, onSend }) => (
     <div>
         <Grid fluid>
             <Row>
                 <Col xs={3}>
-                    <Users
-                        users={ users }
-                    />
+                  <div className="sidebar-wrapper">
+                    <div className="sidebar">
+                      <Sentiment
+                          sentiment={ sentiment }
+                      />
+                      <Users
+                          users={ users }
+                      />
+                    </div>
+                  </div>
                 </Col>
-                <Col xs={9}>
+                <Col xs={6}>
                     <ChatMessages
                         messages={ messages }
                     />
+                </Col>
+                <Col xs={3}>
+                  <div className="sidebar-wrapper">
+                    <div className="sidebar">
+                      <Tweets
+                          tweets={ tweets }
+                      />
+                    </div>
+                  </div>
                 </Col>
             </Row>
         </Grid>
@@ -156,6 +218,8 @@ class App extends Component {
         this.connect = this.connect.bind(this);
 
         this.state = {
+            sentiment: {},
+            tweets: [],
             users: [],
             messages: [],
             clientId: getClientId(),
@@ -175,7 +239,13 @@ class App extends Component {
                     if (topic === 'client-connected') {
                         this.setState({ users: [...this.state.users, message] })
                     } else if (topic === 'client-disconnected') {
-                        this.setState({ users: this.state.users.filter(user => user.clientId !== message.clientId) })
+                      this.setState({ users: this.state.users.filter(user => user.clientId !== message.clientId) })
+                    } else if (topic === 'sentiment') {
+                      this.setState({ sentiment: message })
+                    } else if (topic === 'tweets') {
+                      console.log("TWEEEEEEEEEEET")
+                      // this.setState({ tweets: this.state.tweets.filter(tweet => tweet.id !== message.id) })
+                      this.setState({ tweets: message })
                     } else {
                         this.setState({ messages: [...this.state.messages, message] });
                     }
@@ -198,6 +268,8 @@ class App extends Component {
                     isConnected={ this.state.isConnected }
                 />
                 <ChatWindow
+                    tweets={ this.state.tweets }
+                    sentiment={ this.state.sentiment }
                     users={ this.state.users }
                     messages={ this.state.messages }
                     onSend={ this.onSend }

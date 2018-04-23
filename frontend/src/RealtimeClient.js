@@ -3,6 +3,8 @@ import request from 'superagent';
 
 const LAST_WILL_TOPIC = 'last-will';
 const MESSAGE_TOPIC = 'message';
+const TWEETS_TOPIC = 'tweets';
+const SENTIMENT_TOPIC = 'sentiment';
 const CLIENT_CONNECTED = 'client-connected';
 const CLIENT_DISCONNECTED = 'client-disconnected';
 
@@ -37,6 +39,8 @@ export default (clientId, username) => {
         client.on('connect', () => {
           console.log('Connected to AWS IoT Broker');
           client.subscribe(MESSAGE_TOPIC);
+          client.subscribe(SENTIMENT_TOPIC);
+          client.subscribe(TWEETS_TOPIC);
           client.subscribe(CLIENT_CONNECTED);
           client.subscribe(CLIENT_DISCONNECTED);
           const connectNotification = getNotification(clientId, username);

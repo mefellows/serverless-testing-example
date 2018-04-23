@@ -9,7 +9,7 @@ const t = new Twit({
   consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
   access_token: process.env.TWITTER_ACCESS_TOKEN,
   access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
-  timeout_ms: 60 * 1000,  // optional HTTP request timeout to apply to all requests.
+  timeout_ms: 60 * 1000, // optional HTTP request timeout to apply to all requests.
 })
 const TOPIC_ARN = process.env.TOPIC_ARN;
 const MAGIC_KEYWORD = process.env.MAGIC_KEYWORD || "#awssummit";
@@ -40,7 +40,10 @@ const handler = (event, context, callback) => {
         console.log(`Retreived last item: ${lastItem}`);
 
         // 2. Find all tweets
-        t.get('search/tweets', { q: `${MAGIC_KEYWORD} since_id:${lastItem}`, count }, (err, data) => {
+        t.get('search/tweets', {
+          q: `${MAGIC_KEYWORD} since_id:${lastItem}`,
+          count
+        }, (err, data) => {
           const tweets = [];
 
           data.statuses.forEach((item) => {
