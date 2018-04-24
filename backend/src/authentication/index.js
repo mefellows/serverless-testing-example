@@ -7,6 +7,7 @@ const SHA256 = require('crypto-js/sha256');
 const HmacSHA256 = require('crypto-js/hmac-sha256');
 const hex = require('crypto-js/enc-hex');
 
+// API to retrieve a pre-signed URL for access to IoT
 exports.handler = (event, context, callback) => {
   const url = computeUrl();
 
@@ -23,7 +24,6 @@ exports.handler = (event, context, callback) => {
 
   callback(null, response);
 };
-
 
 function SigV4Utils() { }
 

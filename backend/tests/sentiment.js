@@ -1,7 +1,6 @@
 const AWS = require('aws-sdk');
 var params = {
   LanguageCode: 'en',
-  /* required */
   TextList: [
     "you're a moron",
     "I'm really excited for this demo, not sure what to expect!"

@@ -2,20 +2,25 @@
 service: aws-meetup-serverless
 
 custom:
+  serverless-offline:
+    port: 4000
   serverless-offline-sns:
     port: 4002 # a free port for the sns server to run on
     debug: true
     accountId: 123456789012 # Optional
+  webpack:
+    webpackConfig: 'webpack.config.js'   # Name of webpack configuration file
 
 plugins:
+  - serverless-webpack
   - serverless-offline-sns
   - serverless-offline
 
 provider:
   name: aws
-  runtime: nodejs6.10
+  runtime: nodejs8.10
   stage: dev
-  region: us-east-1 # Set your AWS region here
+  region: us-east-1
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -45,21 +50,24 @@ provider:
     IOT_SECRET_KEY: '${env:IOT_SECRET_KEY}'
 
 functions:
-  provider:
-    handler: src/twitterProvider.handler
+  twitterProvider:
+    handler: src/twitterProvider/index.handler
     events:
       - schedule: rate(1 minute)
       - http:
           method: GET
           path: /twitter
           cors: true
-  consumer:
-    handler: src/twitterPush.handler
+  twitterPush:
+    handler: src/twitterPush/index.handler
     events:
       - sns: pact-events
-          # arn: "arn:aws:sns:us-east-1:123456789012:pact-events"
-  iotPresignedUrl:
-    handler: src/iotPresignedUrl.handler
+  sentiment:
+    handler: src/sentiment/index.handler
+    events:
+      - sns: pact-events
+  authentication:
+    handler: src/authentication/index.handler
     timeout: 30
     events:
       - http:
@@ -71,7 +79,7 @@ functions:
           path: /iot-presigned-url
           cors: true
   notifyDisconnect:
-    handler: src/iotNotifyDisconnect.handler
+    handler: src/iotNotifyDisconnect/index.handler
     timeout: 30
     events:
       - iot:

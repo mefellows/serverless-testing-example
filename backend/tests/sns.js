@@ -6,8 +6,8 @@ var sns = new AWS.SNS({
 sns.publish({
   Message: JSON.stringify([{
     id: Math.floor(new Date() / 1000),
-    text: "this is an AMAZING tweet, wow this is a jolly good demo #FooeyFooFoo",
-    // text: "I'm really freaking angry! #FooeyFooFoo"
+    // text: "this is an AMAZING tweet, wow this is a jolly good demo #FooeyFooFoo",
+    text: "I'm really freaking angry! #FooeyFooFoo",
     // text: "That matt guy, what a jerk #FooeyFooFoo",
     user: {
       screen_name: "SummitOfDoom"
