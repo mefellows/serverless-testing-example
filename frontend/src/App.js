@@ -37,7 +37,7 @@ const SentimentItem = (sentiment) => (
 
 const Users = ({ users }) => (
     <ListGroup>
-        <ListGroupItem key='title'><i>Connected users</i></ListGroupItem>
+        <ListGroupItem key='title'>👨‍💻<i>Connected users</i></ListGroupItem>
         { users.map(User) }
     </ListGroup>
 );
@@ -65,7 +65,7 @@ const Sentiment = ({ sentiment }) => {
 
   return (
     <ListGroup>
-        <ListGroupItem key='title'><i>Tweet sentiment</i></ListGroupItem>
+        <ListGroupItem key='title'>📈 <i>Tweet sentiment</i></ListGroupItem>
         { SentimentItem(status) }
     </ListGroup>);
 }
@@ -77,7 +77,7 @@ const Tweet = (tweet) => (
 const Tweets = ({ tweets }) => (
   <div id="Tweets">
       <ListGroup>
-          <ListGroupItem key='title'><i>Tweet Stream</i></ListGroupItem>
+          <ListGroupItem key='title'><img className="icon" src={ require('./twitter.png') } /><i>Tweet Stream</i></ListGroupItem>
           { tweets.map(Tweet) }
       </ListGroup>
   </div>
@@ -90,7 +90,7 @@ const Message = (message) => (
 const ChatMessages = ({ messages }) => (
     <div id="messages">
         <ListGroup>
-            <ListGroupItem key='title'><i>Messages</i></ListGroupItem>
+            <ListGroupItem key='title'>💬 <i> Messages</i></ListGroupItem>
             { messages.map(Message) }
         </ListGroup>
     </div>
@@ -117,8 +117,8 @@ const ChatInput = ({ onSend }) => {
     }
     return (
         <Navbar fixedBottom fluid>
-            <Col xs={9} xsOffset={3}>
-                <Form inline onSubmit={ onSubmit }>
+            <Col xs={12}>
+                <Form id="message-entry" inline onSubmit={ onSubmit }>
                     <InputGroup>
                         <FormControl
                             type="text"
