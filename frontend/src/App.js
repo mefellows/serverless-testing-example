@@ -22,6 +22,7 @@ import Filter from 'bad-words';
 
 const filter = new Filter({ placeHolder: '🌩'});
 filter.addWords(['Google', 'Kube', 'Kubernetes', 'server', 'serverless']);
+filter.removeWords('hell');
 
 const getClientId = () => 'web-client:' + Guid.raw();
 
