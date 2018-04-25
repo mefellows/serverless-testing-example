@@ -1,0 +1,8 @@
+# General vars
+export APPLICATION_NAME="aws-summiteers"
+
+# AWS Variables
+export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-"us-east-1"}
+
+# Environment
+export PATH="${PATH}:./node_modules/.bin"

@@ -1,3 +1,6 @@
 {
-  "git.ignoreLimitWarning": true
+  "git.ignoreLimitWarning": true,
+  "standard.enable": false,
+  "standard.autoFixOnSave": false,
+  "editor.formatOnSave": false
 }

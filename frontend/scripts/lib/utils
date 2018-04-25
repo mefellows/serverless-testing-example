@@ -1,0 +1,85 @@
+# Get path of this script
+function _path {
+  called=$_
+  CUR_PATH=""
+
+  if [[ $called != $0 ]]; then
+    CUR_PATH=$BASH_SOURCE
+  else
+    CUR_PATH=${BASH_SOURCE[0]}
+  fi
+  echo $CUR_PATH
+}
+
+function _curDir {
+  echo $(dirname $(_path))
+}
+
+# Source global configs.
+. "$(_curDir)/config"
+
+function step {
+    # DESCRIPTION
+    #
+    #    Log formatted step (e.g. key milestone in script) to screen
+    #
+    # ARGUMENTS
+    #
+    #    $1 - String to log
+    #
+    # RETURNS
+    #
+    #    Formatted string
+  echo ""
+  echo " -----> ${@}"
+}
+
+function log {
+    # DESCRIPTION
+    #
+    #    Log formatted output to screen
+    #
+    # ARGUMENTS
+    #
+    #    $1 - String to log
+    #
+    # RETURNS
+    #
+    #    Formatted string
+  echo "        ${@}"
+}
+
+function stack_exists {
+    # DESCRIPTION
+    #
+    #    Check if AWS stack exists
+    #
+    # ARGUMENTS
+    #
+    #    $1 - Stack name
+    #
+    # RETURNS
+    #
+    #    0 if exists or non-zero if not
+  STACK=$1
+  aws --region $AWS_DEFAULT_REGION cloudformation describe-stacks --stack-name $1 2>&1 > /dev/null
+}
+
+function get_stack_output {
+    # DESCRIPTION
+    #
+    #    Gets output from aws stack description
+    #
+    # ARGUMENTS
+    #
+    #    $1 - Stack name
+    #    $2 - Key to select from output
+    #
+    # RETURNS
+    #
+    #    Filtered output key from stack describe
+    # Source environment proxy file
+  STACK=$1
+  OUTPUT=$2
+  aws --region $AWS_DEFAULT_REGION cloudformation describe-stacks --stack-name $1 --output json | jq --raw-output '.Stacks[0].Outputs | .[] | select(.OutputKey=="'$OUTPUT'") | .OutputValue'
+}

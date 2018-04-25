@@ -5,3 +5,8 @@ node_modules
 coverage
 bin
 .env
+jspm_packages
+build
+.DS_Store
+.idea
+.vscode

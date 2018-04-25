@@ -1,0 +1,108 @@
+# Serverless SNS
+service: aws-meetup-serverless
+
+custom:
+  serverless-offline:
+    port: 4000
+  serverless-offline-sns:
+    port: 4002 # a free port for the sns server to run on
+    debug: true
+    accountId: 123456789012 # Optional
+  webpack:
+    webpackConfig: 'webpack.config.js'   # Name of webpack configuration file
+
+plugins:
+  - serverless-webpack
+  - serverless-offline-sns
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "iot:Connect"
+        - "iot:Publish"
+        - "iot:Subscribe"
+        - "iot:Receive"
+        - "iot:GetThingShadow"
+        - "iot:UpdateThingShadow"
+      Resource: "*"
+    - Effect: "Allow"
+      Resource: "*"
+      Action:
+        - "sns:*"
+        - "dynamodb:*"
+        - "comprehend:*"
+  environment:
+    TOPIC_ARN: { "Fn::Join":  ["", ["arn:aws:sns:us-east-1:", { "Ref": "AWS::AccountId" }, ":pact-events"] ] }
+    MAGIC_KEYWORD: "#FooeyFooFoo"
+    # NOTE: These must be present in your shell!
+    TWITTER_CONSUMER_KEY: ${env:TWITTER_CONSUMER_KEY}
+    TWITTER_CONSUMER_SECRET: ${env:TWITTER_CONSUMER_SECRET}
+    TWITTER_ACCESS_TOKEN: ${env:TWITTER_ACCESS_TOKEN}
+    TWITTER_ACCESS_TOKEN_SECRET: ${env:TWITTER_ACCESS_TOKEN_SECRET}
+    IOT_AWS_REGION: 'us-east-1'
+    IOT_ENDPOINT_HOST: '${env:IOT_ENDPOINT_HOST}'
+    IOT_ACCESS_KEY: '${env:IOT_ACCESS_KEY}'
+    IOT_SECRET_KEY: '${env:IOT_SECRET_KEY}'
+
+functions:
+  twitterProvider:
+    handler: src/twitterProvider/index.handler
+    events:
+      # - schedule: rate(1 minute)
+      - http:
+          method: GET
+          path: /twitter
+          cors: true
+  twitterPush:
+    handler: src/twitterPush/index.handler
+    events:
+      - sns: pact-events
+  sentiment:
+    handler: src/sentiment/index.handler
+    events:
+      - sns: pact-events
+  authentication:
+    handler: src/authentication/index.handler
+    timeout: 30
+    events:
+      - http:
+          method: OPTIONS
+          path: /iot-presigned-url
+          cors: true
+      - http:
+          method: GET
+          path: /iot-presigned-url
+          cors: true
+  notifyDisconnect:
+    handler: src/iotNotifyDisconnect/index.handler
+    timeout: 30
+    events:
+      - iot:
+          sql: "SELECT * FROM 'last-will'"
+
+package:
+  individually: true
+  exclude:
+    - "node_modules/aws-sdk/**"
+
+resources:
+  Resources:
+    checkpointTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: checkpoint
+        AttributeDefinitions:
+          - AttributeName: Type
+            AttributeType: S
+        KeySchema:
+          - AttributeName: Type
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

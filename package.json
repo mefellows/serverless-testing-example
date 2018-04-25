@@ -31,8 +31,5 @@
   ],
   "author": "Matt Fellows <matt.fellows@onegeek.com.au>",
   "license": "MIT",
-  "dependencies": {
-    "aws-sdk": "^2.218.1",
-    "twit": "^2.2.9"
-  }
+  "dependencies": {}
 }

@@ -1,0 +1,39 @@
+{
+  "name": "serverless-demo",
+  "version": "1.0.0",
+  "description": "Demo of the serverless NodeJS app",
+  "license": "MIT",
+  "scripts": {
+    "clean": "if [ -d 'pacts' ]; then rm -rf pacts; fi",
+    "test:pact": "npm run clean && mocha src/**/*.spec.js",
+    "test:publish": "node ../publish.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.218.1",
+    "aws-signature-v4": "^1.1.0",
+    "crypto": "0.0.3",
+    "crypto-js": "^3.1.9-1",
+    "lodash": "^4.17.5",
+    "moment": "2.11.1",
+    "twit": "^2.2.9"
+  },
+  "devDependencies": {
+    "@pact-foundation/pact": "^6.0.0-alpha.12",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "chai": "^3.5.0",
+    "ejs": "^2.5.8",
+    "mocha": "^3.5.3",
+    "serverless": "^1.26.1",
+    "serverless-offline": "^3.20.3",
+    "serverless-offline-sns": "^0.40.0",
+    "serverless-webpack": "^5.1.1",
+    "webpack": "^3.11.0",
+    "webpack-node-externals": "^1.6.0"
+  }
+}
