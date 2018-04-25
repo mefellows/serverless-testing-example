@@ -1,7 +1,7 @@
 /* tslint:disable:no-unused-expression object-literal-sort-keys max-classes-per-file no-empty */
-const { MessageConsumer, Message, synchronousBodyHandler, Matchers } = require("@pact-foundation/pact");
-const { like, term } = Matchers;
-const path = require("path");
+const { MessageConsumer, Message, synchronousBodyHandler, Matchers } = require("@pact-foundation/pact")
+const { like, term } = Matchers
+const path = require("path")
 
 // Dummy event consumer for now
 // as long as it doesn't fail, we're good
@@ -12,7 +12,7 @@ describe("AWS Summiteer Twitter Provider - Twitter", () => {
     consumer: "AWSSummiteerTwitterSNSProvider",
     dir: path.resolve(process.cwd(), "pacts"),
     provider: "Twitter",
-  });
+  })
 
   context("given the twitter scraper runs every minute", () => {
     describe("when receiving a stream of tweets", () => {
@@ -27,8 +27,8 @@ describe("AWS Summiteer Twitter Provider - Twitter", () => {
           .withMetadata({
             "content-type": "application/json",
           })
-          .verify(synchronousBodyHandler(consumeEvent));
-      });
-    });
-  });
-});
+          .verify(synchronousBodyHandler(consumeEvent))
+      })
+    })
+  })
+})

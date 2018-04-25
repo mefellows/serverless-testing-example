@@ -1,9 +1,13 @@
-'use strict';
+'use strict'
 
 const Twit = require('twit')
-const AWS = require('aws-sdk');
-const dynamodb = new AWS.DynamoDB();
-const sns = new AWS.SNS();
+const AWS = require('aws-sdk')
+const dynamodb = new AWS.DynamoDB({
+  endpoint: process.env.DYNAMO_ENDPOINT_HOST
+})
+const sns = new AWS.SNS({
+  endpoint: process.env.SNS_ENDPOINT_HOST
+})
 const t = new Twit({
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
   consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
@@ -11,95 +15,126 @@ const t = new Twit({
   access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
   timeout_ms: 60 * 1000, // optional HTTP request timeout to apply to all requests.
 })
-const TOPIC_ARN = process.env.TOPIC_ARN;
-const MAGIC_KEYWORD = process.env.MAGIC_KEYWORD || "#awsmelb";
-const tableName = 'checkpoint';
-const count = 10;
-let lastItem = null;
+const TOPIC_ARN = process.env.TOPIC_ARN
+const MAGIC_KEYWORD = process.env.MAGIC_KEYWORD || "#awsmelb"
 
 // Provider handler. Runs on a scheduled basis, extracting from Twitter
 // and sending data to an SNS queue
 const handler = (event, context, callback) => {
-  console.log(`Running Twitter scraper for keyword ${MAGIC_KEYWORD}`);
+  console.log(`Running Twitter scraper for keyword ${MAGIC_KEYWORD}`)
 
-  // 1. Check last dynamodb record, if empty we'll set it in a minute
-  const search = {
-    TableName: tableName,
-    Key: {
-      "Type": {
-        S: "twitter"
+  const repository = new CheckpointRepository()
+  const scraper = new TwitterScraper(repository)
+
+  scraper.run()
+    .then(() => callback(null))
+    .catch(callback)
+}
+
+class TwitterScraper {
+
+  constructor(repository) {
+    this.repository = repository
+    this.count = 10
+    this.lastItem = 0
+  }
+
+  run() {
+    return this.getLastTwitterId()
+      .then(this.getTweets.bind(this))
+      .then(this.publishTweets.bind(this))
+      .then(this.updateCheckpoint.bind(this))
+  }
+
+  getLastTwitterId() {
+    return this.repository.getCheckpoint().then((lastItem) => {
+      this.lastItem = lastItem
+      return lastItem
+    })
+  }
+
+  getTweets(lastItem) {
+    return t.get('search/tweets', {
+      // q: `${MAGIC_KEYWORD} since_id:${lastItem}`, // TODO: revert this
+      q: `${MAGIC_KEYWORD} since_id:0`,
+      count: this.count
+    }).then((res) => {
+      const tweets = []
+      const statuses = res.data.statuses
+
+      statuses.forEach((item) => {
+        console.log(`Tweet: ${item.id} => ${item.text}`)
+        tweets.push(item)
+      })
+
+      this.lastItem = (statuses.length > 0) ? statuses[0].id : lastItem
+      console.log(`New last item: ${this.lastItem}`)
+
+      return tweets
+    })
+  }
+
+  publishTweets(tweets) {
+    // TODO: Create repository for this as per Dynamo...
+    const params = {
+      Message: JSON.stringify(tweets),
+      TopicArn: TOPIC_ARN
+    }
+
+    return sns.publish(params).promise()
+  }
+
+  updateCheckpoint() {
+    return this.repository.save({
+      Type: "twitter",
+      LastItem: `${this.lastItem}`
+    })
+  }
+}
+
+class CheckpointRepository {
+  constructor() {
+    this.tableName = 'checkpoint'
+  }
+  save(doc) {
+    const params = {
+      TableName: tableName,
+      Item: {
+        "Type": {
+          S: doc.Type,
+        },
+        "LastItem": {
+          N: dog.LastItem,
+        },
       },
-    },
-  };
-  dynamodb.getItem(search,
-    (err, data) => {
-      if (err) {
-        console.log(err, err.stack);
-      } else {
-        lastItem = data.Item.LastItem.N
-        console.log(`Retreived last item: ${lastItem}`);
+      ReturnConsumedCapacity: "TOTAL",
+    }
+    return dynamodb.putItem(params).promise()
+  }
 
-        // 2. Find all tweets
-        t.get('search/tweets', {
-          // q: `${MAGIC_KEYWORD} since_id:${lastItem}`, // TODO: revert this
-          q: `${MAGIC_KEYWORD} since_id:0`,
-          count
-        }, (err, data) => {
-          console.log(err, data)
-          const tweets = [];
+  getCheckpoint() {
+    const search = {
+      TableName: this.tableName,
+      Key: {
+        "Type": {
+          S: "twitter"
+        },
+      },
+    }
 
-          data.statuses.forEach((item) => {
-            console.log(`Tweet: ${item.id} => ${item.text}`);
-            // TODO: add our own Tweet format
-            tweets.push(item);
-          })
+    return dynamodb
+      .getItem(search)
+      .promise()
+      .then((data) => {
+        this.lastItem = data.Item.LastItem.N
 
-          lastItem = (data.statuses.length > 0) ? data.statuses[0].id : lastItem
-          console.log(`New last item: ${lastItem}`);
-
-          // 3. Send tweets to queue for processing
-          var params = {
-            Message: JSON.stringify(tweets),
-            TopicArn: TOPIC_ARN
-          };
-          sns.publish(params, (error, data) => {
-            if (error) {
-              callback(error);
-            }
-
-            callback(null, {
-              message: 'Message successfully published to SNS topic "pact-events"',
-              event
-            });
-          });
-
-          // 4. Update DynamoDB table checkpoint
-          params = {
-            TableName: tableName,
-            Item: {
-              "Type": {
-                S: "twitter",
-              },
-              "LastItem": {
-                N: `${lastItem}`,
-              },
-            },
-            ReturnConsumedCapacity: "TOTAL",
-          };
-
-          console.log("Put dynamodb: ", params)
-          dynamodb.putItem(params, (err, data) => {
-            callback(null, {
-              lastItem,
-              err,
-              data
-            });
-          });
-        })
-      }
-    });
-};
+        return this.lastItem
+      })
+  }
+}
 
 module.exports = {
   handler,
-};
+  CheckpointRepository,
+  TwitterScraper,
+}

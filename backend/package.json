@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "if [ -d 'pacts' ]; then rm -rf pacts; fi",
+    "test": "mocha src/**/*.spec.js",
     "test:pact": "npm run clean && mocha src/**/*.spec.js",
     "test:publish": "node ../publish.js"
   },
@@ -27,6 +28,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-3": "^6.24.1",
     "chai": "^3.5.0",
+    "chai-as-promised": "^7.1.1",
     "ejs": "^2.5.8",
     "mocha": "^3.5.3",
     "serverless": "^1.26.1",

@@ -1,6 +1,7 @@
 var AWS = require("aws-sdk"); // must be npm installed to use
 var sns = new AWS.SNS({
-  endpoint: "http://127.0.0.1:4002",
+  endpoint: "http://127.0.0.1:4575", // Localstack
+  // endpoint: "http://127.0.0.1:4002", // serverless-offline-sns
   region: "us-east-1",
 });
 sns.publish({

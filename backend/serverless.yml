@@ -19,8 +19,8 @@ plugins:
 provider:
   name: aws
   runtime: nodejs8.10
-  stage: dev
-  region: us-east-1
+  region: ${opt:region, file(serverless.${self:provider.stage}.yml):region}
+  stage: ${opt:stage, 'dev'}
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -46,9 +46,12 @@ provider:
     TWITTER_ACCESS_TOKEN: ${env:TWITTER_ACCESS_TOKEN}
     TWITTER_ACCESS_TOKEN_SECRET: ${env:TWITTER_ACCESS_TOKEN_SECRET}
     IOT_AWS_REGION: 'us-east-1'
-    IOT_ENDPOINT_HOST: '${env:IOT_ENDPOINT_HOST}'
-    IOT_ACCESS_KEY: '${env:IOT_ACCESS_KEY}'
-    IOT_SECRET_KEY: '${env:IOT_SECRET_KEY}'
+    DYNAMO_ENDPOINT_HOST: ${env:DYNAMO_ENDPOINT_HOST, file(serverless.${self:provider.stage}.yml):dynamo_endpoint, 'https://dynamodb.${self:provider.region}.amazonaws.com'}
+    SNS_ENDPOINT_HOST: ${env:SNS_ENDPOINT_HOST, file(serverless.${self:provider.stage}.yml):sns_endpoint, 'https://sns.${self:provider.region}.amazonaws.com'}
+    IOT_ENDPOINT_HOST: ${env:IOT_ENDPOINT_HOST, file(serverless.${self:provider.stage}.yml):iot_endpoint}
+    IOT_ACCESS_KEY: ${env:IOT_ACCESS_KEY}
+    IOT_SECRET_KEY: ${env:IOT_SECRET_KEY}
+    STAGE: ${opt:stage, self:provider.stage}
 
 functions:
   twitterProvider:
