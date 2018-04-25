@@ -219,37 +219,8 @@ class App extends Component {
 
         this.state = {
             sentiment: {},
-            tweets: [
-              // {
-              //   id: 1234,
-              //   text: "fuck you and other crazy arse words!",
-              //   user: { screen_name: "aoeuaeo" }
-              // },
-              // {
-              //   id: 12324,
-              //   text: "Google is better",
-              //   user: { screen_name: "aoeuaeo" }
-              // }
-            ],
-            users: [
-              {"clientId":"web-client:e8301aef-38015dde-b4e40bd9d712","username":"aoeu"},
-              {"clientId":"web-client:e8301aef-334-8015-9dde-b4e40bd9d712","username":"ao1eu"},
-              {"clientId":"web-client:e8301aef-33805-9dde-b4e40bd9d712","username":"aoe2u"},
-              {"clientId":"web-client:e8301aef-3343-8015-9dde-b4e49d712","username":"ao3eu"},
-              {"clientId":"web-client:e8301aef-3343-8015-9dde-b4e40bd712","username":"aoe4u"},
-              {"clientId":"web-client:e8301a3413-8015-9dde-b4e40bd9d712","username":"aoe5u"},
-              {"clientId":"web-client:e8301aef-38015dde-b4e4110bd9d712","username":"ao11eu"},
-              {"clientId":"web-client:e8301aef-3312-8015-9dde-b124e40bd9d712","username":"ao1eu"},
-              {"clientId":"web-client:e8301aef-33812305-9dde-b4e40bd9d712","username":"aoe2aoeuu"},
-              {"clientId":"web-client:e8301aef-3343123-8015-9ddoaeue-b4e49d712","username":"ao3aoeueu"},
-              {"clientId":"web-client:e8301aef-3341233-8015-9dde-b4e40bd712","username":"aoeaoeu4u"},
-              {"clientId":"web-client:e8301a343-802315-9dde-b4e40bd9d712","username":"aoeaoeuaoe5u"},
-              {"clientId":"web-client:e8301aef-38021115dde-b4e40bd9d712","username":"aoaoeu1eu"},
-              {"clientId":"web-client:e8301aef-33123431239dde-b4e40bd9d712","username":"aoe1232u"},
-              {"clientId":"web-client:e8301aef-3343312312-8015-9dde-b4e49d712","username":"ao312312eu"},
-              {"clientId":"web-client:e8301aef-3343-8011235-9dde-b4e40bd712","username":"ao123e4u"},
-              {"clientId":"web-client:e8301a343-8015-9dde-b4e41230bd9d712","username":"a123123oe5u"},
-            ],
+            tweets: [],
+            users: [],
             messages: [],
             clientId: getClientId(),
             isConnected: false,
