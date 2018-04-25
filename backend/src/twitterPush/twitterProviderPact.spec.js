@@ -2,6 +2,7 @@
 const { MessageConsumer, Message, synchronousBodyHandler, Matchers } = require("@pact-foundation/pact");
 const { like, term } = Matchers;
 const path = require("path");
+const _ = require('lodash')
 
 // Dummy event consumer for now
 // as long as it doesn't fail, we're good
@@ -28,5 +29,23 @@ describe("AWS Summiteer Twitter Push - Provider", () => {
         })
         .verify(synchronousBodyHandler(consumeEvent));
     });
+  });
+  describe.only("receive a disconnect event", () => {
+    const map1 = {
+      positive: 0,
+      negative: 0,
+    }
+
+    const data = [
+      {
+        positive: 3,
+        negative: 4,
+      },
+      {
+        positive: 1,
+        negative: 2,
+      }
+    ]
+    console.log(_.reduce(data, (acc, s) => _.mergeWith(acc, s, (a, b) => a + b), map1))
   });
 });

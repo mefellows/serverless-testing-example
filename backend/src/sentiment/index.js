@@ -1,88 +1,84 @@
 'use strict'
 
 const AWS = require('aws-sdk')
+const _ = require('lodash')
 
 AWS.config.region = process.env.IOT_AWS_REGION
-const iotData = new AWS.IotData({ endpoint: process.env.IOT_ENDPOINT_HOST })
-const comprehend = new AWS.Comprehend({ region: "us-east-1" })
+const iotData = new AWS.IotData({
+  endpoint: process.env.IOT_ENDPOINT_HOST
+})
+const comprehend = new AWS.Comprehend({
+  region: "us-east-1"
+})
 
-let tweetCount = 0
+// Obviously, this won't persist for long in memory, but let's
+// not worry about Dynamo usage here...
 let sentiment = {
-	'Positive': 1,
-	'Negative': 5,
-	'Neutral': 3,
-	'Mixed': 4
+  'Positive': 0,
+  'Negative': 0,
+  'Neutral': 0,
+  'Mixed': 0
 }
 
 // Consumer handler, responsible for extracting message from SNS
 // and dealing with lambda-related things.
 const handler = (event, context, callback) => {
-	console.log("Received event from SNS")
+  console.log("Received event from SNS")
 
-	event.Records.forEach(e => {
-		console.log("Event:", JSON.parse(e.Sns.Message))
-		consumeEvent(JSON.parse(e.Sns.Message))
-	})
+  event.Records.forEach(e => {
+    consumeEvent(JSON.parse(e.Sns.Message))
+  })
 
-	callback(null, {
-		event
-	})
+  callback(null, {
+    event
+  })
 }
 
 // Actual consumer code, has no Lambda/AWS/Protocol specific stuff
 // This is the thing we test in the Consumer Pact tests
 const consumeEvent = (event) => {
-	console.log('consuming tweets', event)
+  // console.log('consuming tweets', event)
 
-	if (!event) {
-		throw new Error("Invalid event, missing fields")
-	}
+  if (!event) {
+    throw new Error("Invalid event, missing fields")
+  }
 
-	const sentimentAnalyses = []
+  let params = {
+    LanguageCode: 'en',
+    TextList: _.map(event, (i) => i.text)
+  }
 
-	event.forEach((i) => {
-    sentimentAnalyses.push(i.text)
-  })
-
-	// Sentiment Analysis
-	params = {
-		LanguageCode: 'en',
-		TextList: sentimentAnalyses
-	}
-
-	comprehend.batchDetectSentiment(params, function (err, data) {
-		if (err) {
+  comprehend.batchDetectSentiment(params, function (err, data) {
+    if (err) {
       console.dir(err, err.stack)
     } else {
-      sentiment = data.ResultList[0].SentimentScore;
-      console.dir(sentiment)
-    }
-  })
-
-  // Sent sentiment
-  params = {
-    topic: 'sentiment',
-    payload: JSON.stringify(sentiment),
-    qos: 0
-  }
-  iotData.publish(params, function (err, data) {
-    if (err) {
-      console.log(`Unable to notify IoT of sentiment: ${err}`)
-    } else {
-      console.log('Successfully notified IoT of sentiment')
+      sentiment = _.reduce(data.ResultList, (acc, s) => _.mergeWith(acc, s.SentimentScore, (a, b) => a + b), sentiment)
     }
 
-    console.log('Tweet count:', ++tweetCount)
-    console.log('Sentiment:', sentiment)
-
-    return {
-      tweetCount,
-      sentiment
+    // Sent sentiment
+    params = {
+      topic: 'sentiment',
+      payload: JSON.stringify(sentiment),
+      qos: 0
     }
+    iotData.publish(params, function (err, data) {
+      if (err) {
+        console.log(`Unable to notify IoT of sentiment: ${err}`)
+      } else {
+        console.log('Successfully notified IoT of sentiment')
+      }
+
+      console.log('Sentiment:', sentiment)
+
+      return {
+        sentiment
+      }
+    })
   })
 }
 
+
 module.exports = {
-	handler,
-	consumeEvent
+  handler,
+  consumeEvent
 }

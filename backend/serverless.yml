@@ -36,6 +36,7 @@ provider:
       Action:
         - "sns:*"
         - "dynamodb:*"
+        - "comprehend:*"
   environment:
     TOPIC_ARN: { "Fn::Join":  ["", ["arn:aws:sns:us-east-1:", { "Ref": "AWS::AccountId" }, ":pact-events"] ] }
     MAGIC_KEYWORD: "#FooeyFooFoo"
@@ -53,7 +54,7 @@ functions:
   twitterProvider:
     handler: src/twitterProvider/index.handler
     events:
-      - schedule: rate(1 minute)
+      # - schedule: rate(1 minute)
       - http:
           method: GET
           path: /twitter

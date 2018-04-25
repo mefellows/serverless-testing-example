@@ -2,6 +2,8 @@
 
 ![serverless-logo](https://user-images.githubusercontent.com/53900/38163394-57ec9176-353f-11e8-80d1-b9f6d5f1773f.png)
 
+Website URL: http://aws-summiteers.s3-website-us-east-1.amazonaws.com/
+
 Sample contract testing application running using the [Serverless](https://github.com/serverless/serverless) framework.
 
 The very basic architecture is as follows:
@@ -17,17 +19,20 @@ The very basic architecture is as follows:
 ## Overview
 <!-- TOC -->
 
-- [Overview](#overview)
-- [Test Services with Pact](#test-services-with-pact)
-- [Deployment](#deployment)
-  - [Pact Broker integration](#pact-broker-integration)
-  - [Running deployment](#running-deployment)
-- [Running](#running)
-- [Cleaning up](#cleaning-up)
-- [Further reading](#further-reading)
-- [Set up the project](#set-up-the-project)
-- [Set up the back-end](#set-up-the-back-end)
-- [Set up the front-end](#set-up-the-front-end)
+- [Serverless example](#serverless-example)
+  - [Overview](#overview)
+  - [Test Services with Pact](#test-services-with-pact)
+  - [Deployment](#deployment)
+    - [Pact Broker integration](#pact-broker-integration)
+    - [Running deployment](#running-deployment)
+  - [Running](#running)
+  - [Cleaning up](#cleaning-up)
+  - [Further reading](#further-reading)
+- [](#)
+- [Serverless WebSockets chat based on AWS IoT and React](#serverless-websockets-chat-based-on-aws-iot-and-react)
+  - [Set up the project](#set-up-the-project)
+  - [Set up the back-end](#set-up-the-back-end)
+  - [Set up the front-end](#set-up-the-front-end)
 
 <!-- /TOC -->
 

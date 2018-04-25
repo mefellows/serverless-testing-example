@@ -20,7 +20,7 @@ let lastItem = null;
 // Provider handler. Runs on a scheduled basis, extracting from Twitter
 // and sending data to an SNS queue
 const handler = (event, context, callback) => {
-  console.log("Running Twitter scraper");
+  console.log(`Running Twitter scraper for keyword ${MAGIC_KEYWORD}`);
 
   // 1. Check last dynamodb record, if empty we'll set it in a minute
   const search = {
@@ -41,17 +41,20 @@ const handler = (event, context, callback) => {
 
         // 2. Find all tweets
         t.get('search/tweets', {
-          q: `${MAGIC_KEYWORD} since_id:${lastItem}`,
+          // q: `${MAGIC_KEYWORD} since_id:${lastItem}`, // TODO: revert this
+          q: `${MAGIC_KEYWORD} since_id:0`,
           count
         }, (err, data) => {
+          console.log(err, data)
           const tweets = [];
 
           data.statuses.forEach((item) => {
             console.log(`Tweet: ${item.id} => ${item.text}`);
             // TODO: add our own Tweet format
             tweets.push(item);
-            lastItem = item.id
           })
+
+          lastItem = (data.statuses.length > 0) ? data.statuses[0].id : lastItem
           console.log(`New last item: ${lastItem}`);
 
           // 3. Send tweets to queue for processing

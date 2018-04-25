@@ -13,7 +13,8 @@ if [ ! -d ./build ]; then
 fi
 
 step "Uploading website to S3"
-aws s3 cp build s3://${bucket_name}/ --recursive --exclude ".git*" --exclude "aws*" --cache-control "max-age=30" --acl public-read
+# aws s3 sync build s3://${bucket_name}/ --recursive --exclude ".git*" --exclude "aws*" --cache-control "max-age=30" --acl public-read
+aws s3 sync build s3://${bucket_name}/ --exclude ".git*" --exclude "*.map" --exclude "aws*" --cache-control "max-age=30" --acl public-read
 aws s3 cp build/index.html s3://${bucket_name}/index.html --cache-control "max-age=30" --acl public-read
 
 step "Done!"

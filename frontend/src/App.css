@@ -50,3 +50,8 @@ body {
   position: absolute;
   top: 35%;
 }
+
+.sentiment {
+  font-size: 500%;
+  text-align: center;
+}

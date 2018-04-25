@@ -33,8 +33,6 @@ export default (clientId, username) => {
     return request('https://mnf6r7nai4.execute-api.us-east-1.amazonaws.com/dev/iot-presigned-url')
       // return request('/iot-presigned-url')
       .then(response => {
-        console.log(response);
-
         client = mqtt.connect(response.body.url, options);
         client.on('connect', () => {
           console.log('Connected to AWS IoT Broker');

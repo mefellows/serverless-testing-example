@@ -4,19 +4,22 @@
   "private": true,
   "dependencies": {
     "angular": "~1.4.8",
+    "bad-words": "^1.6.1",
     "bootstrap": "^3.3.7",
     "guid": "0.0.12",
+    "lodash": "^4.17.5",
     "mqtt": "^2.7.2",
     "react": "^15.5.4",
     "react-bootstrap": "^0.31.0",
     "react-dom": "^15.5.4",
+    "react-mute": "^1.0.1",
     "superagent": "^3.5.2"
   },
   "devDependencies": {
-    "react-scripts": "1.0.5",
-    "@pact-foundation/pact": "^6.0.0-alpha.8",
+    "@pact-foundation/pact": "^6.0.0-alpha.12",
     "chai": "^3.5.0",
-    "mocha": "^3.5.3"
+    "mocha": "^3.5.3",
+    "react-scripts": "1.0.5"
   },
   "scripts": {
     "clean": "if [ -d 'pacts' ]; then rm -rf pacts; fi",
