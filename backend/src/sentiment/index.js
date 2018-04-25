@@ -11,74 +11,95 @@ const comprehend = new AWS.Comprehend({
   region: "us-east-1"
 })
 
-// Obviously, this won't persist for long in memory, but let's
-// not worry about Dynamo usage here...
-let sentiment = {
-  'Positive': 0,
-  'Negative': 0,
-  'Neutral': 0,
-  'Mixed': 0
-}
-
-// Consumer handler, responsible for extracting message from SNS
-// and dealing with lambda-related things.
+// Port.
+// Consumer handler, responsible for receiving the Lambda call
+// and handling
 const handler = (event, context, callback) => {
   console.log("Received event from SNS")
 
-  event.Records.forEach(e => {
-    consumeEvent(JSON.parse(e.Sns.Message))
-  })
+  SNSMessageHandler(event)
+    .then(() => callback(null))
+    .catch(callback)
+}
 
-  callback(null, {
-    event
-  })
+// Adapter / Anti-corruption layer.
+// Resonsible for extracting message from SNS and converting into domain model
+// TODO: You would normally apply a schema check
+//       or similar here - is the format valid etc.
+const SNSMessageHandler = (event) => {
+  const service = new SentimentService()
+  const sentiments = _.map(event.Records, (e) => service.analyseTweetSentiment(JSON.parse(e.Sns.Message)))
+
+  return Promise.all(sentiments)
 }
 
 // Actual consumer code, has no Lambda/AWS/Protocol specific stuff
 // This is the thing we test in the Consumer Pact tests
-const consumeEvent = (event) => {
-  // console.log('consuming tweets', event)
-
-  if (!event) {
-    throw new Error("Invalid event, missing fields")
+class SentimentService {
+  constructor(analyser, repository) {
+    this.analyser = analyser || new SentimentAnalyser()
+    this.repository = repository || new SentimentRepository()
+    this.sentiment = {}
   }
 
-  let params = {
-    LanguageCode: 'en',
-    TextList: _.map(event, (i) => i.text)
-  }
-
-  comprehend.batchDetectSentiment(params, function (err, data) {
-    if (err) {
-      console.dir(err, err.stack)
-    } else {
-      sentiment = _.reduce(data.ResultList, (acc, s) => _.mergeWith(acc, s.SentimentScore, (a, b) => a + b), sentiment)
+  analyseTweetSentiment(tweets) {
+    if (!tweets) {
+      throw new Error("Invalid request, missing fields")
     }
 
-    // Sent sentiment
-    params = {
+    return this.analyser
+      .detectSentiment(_.map(tweets, (i) => i.text))
+      .then((sentiment) => {
+        this.sentiment = sentiment
+
+        return this.sentiment
+      })
+    }
+
+    publishSentiment() {
+      return this.repository.save(this.sentiment)
+    }
+}
+
+class SentimentAnalyser {
+  constructor() {
+    // Obviously, this won't persist for long in memory, but let's
+    // not worry about Dynamo usage here...
+    this.sentiment = {
+      'Positive': 0,
+      'Negative': 0,
+      'Neutral': 0,
+      'Mixed': 0
+    }
+  }
+
+  detectSentiment(phrases) {
+    let params = {
+      LanguageCode: 'en',
+      TextList: phrases
+    }
+    return comprehend
+      .batchDetectSentiment(params).promise()
+      .then((data) => {
+        this.sentiment = _.reduce(data.ResultList, (acc, s) => _.mergeWith(acc, s.SentimentScore, (a, b) => a + b), this.sentiment)
+
+        return this.sentiment
+      })
+  }
+}
+class SentimentRepository {
+  save(sentiment) {
+    return iotData.publish({
       topic: 'sentiment',
       payload: JSON.stringify(sentiment),
       qos: 0
-    }
-    iotData.publish(params, function (err, data) {
-      if (err) {
-        console.log(`Unable to notify IoT of sentiment: ${err}`)
-      } else {
-        console.log('Successfully notified IoT of sentiment')
-      }
-
-      console.log('Sentiment:', sentiment)
-
-      return {
-        sentiment
-      }
-    })
-  })
+    }).promise()
+  }
 }
-
 
 module.exports = {
   handler,
-  consumeEvent
+  SentimentAnalyser,
+  SentimentService,
+  SentimentRepository
 }

@@ -20,6 +20,7 @@ const MAGIC_KEYWORD = process.env.MAGIC_KEYWORD || "#awsmelb"
 
 // Provider handler. Runs on a scheduled basis, extracting from Twitter
 // and sending data to an SNS queue
+// NOTE: Our handler here is just the trigger, none of the values are used!
 const handler = (event, context, callback) => {
   console.log(`Running Twitter scraper for keyword ${MAGIC_KEYWORD}`)
 
@@ -98,13 +99,13 @@ class CheckpointRepository {
   }
   save(doc) {
     const params = {
-      TableName: tableName,
+      TableName: this.tableName,
       Item: {
         "Type": {
           S: doc.Type,
         },
         "LastItem": {
-          N: dog.LastItem,
+          N: doc.LastItem,
         },
       },
       ReturnConsumedCapacity: "TOTAL",

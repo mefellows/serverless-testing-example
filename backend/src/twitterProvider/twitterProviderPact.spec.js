@@ -5,7 +5,7 @@ const { like, term } = Matchers
 const path = require('path')
 const { createEvent } = require('./index')
 
-describe('Message provider tests', () => {
+describe.only('Message provider tests', () => {
   const p = new MessageProvider({
     handlers: {
       'a request to save an event': () => createEvent(),
