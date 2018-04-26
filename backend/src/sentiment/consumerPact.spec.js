@@ -3,7 +3,7 @@ const { MessageConsumer, Message, synchronousBodyHandler, Matchers } = require("
 const { like, term } = Matchers;
 const path = require("path");
 
-// const consumeEvent = require("./index").consumeEvent;
+// Pretent to be the consumer here
 const consumeEvent = () => true
 
 describe("Sentiment - Consumer Tests", () => {
@@ -14,7 +14,7 @@ describe("Sentiment - Consumer Tests", () => {
   });
 
   describe("receive new sentiments", () => {
-    it("should ", () => {
+    it("should be able to receive a new sentiment", () => {
       return messagePact
         .expectsToReceive("a sentiment update")
         .withContent({
@@ -39,7 +39,7 @@ describe("Sentiment - Twitter Consumer tests", () => {
   });
 
   describe("receive new sentiments", () => {
-    it("should ", () => {
+    it("should be able to receive a new sentiment", () => {
       return messagePact
         .expectsToReceive("a sentiment update")
         .withContent({
