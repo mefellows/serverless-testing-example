@@ -22,7 +22,7 @@ const handler = (event, context, callback) => {
 //       or similar here - is the format valid etc.
 const SNSMessageHandler = (event) => {
   if (!event || !event.Records) {
-    throw new Error("No records passed in to handler")
+    return Promise.reject(new Error("No records passed in to handler"))
   }
   const service = new SentimentService()
   const sentiments = _.map(event.Records, (e) => {

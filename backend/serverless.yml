@@ -57,7 +57,7 @@ functions:
   twitterProvider:
     handler: src/twitterProvider/index.handler
     events:
-      # - schedule: rate(1 minute)
+      - schedule: rate(1 minute)
       - http:
           method: GET
           path: /twitter
