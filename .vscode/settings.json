@@ -2,5 +2,17 @@
   "git.ignoreLimitWarning": true,
   "standard.enable": false,
   "standard.autoFixOnSave": false,
-  "editor.formatOnSave": false
+  "editor.formatOnSave": false,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/*-lock.json": true,
+    "**/.serverless": true,
+    "**/.webpack": true,
+    "**/build": true,
+  }
 }
