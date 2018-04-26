@@ -27,6 +27,9 @@ const handler = (event, context, callback) => {
 // TODO: You would normally apply a schema check
 //       or similar here - is the format valid etc.
 const SNSMessageHandler = (event) => {
+  if (!event || !event.Records) {
+    throw new Error("No records passed in to handler")
+  }
   const service = new SentimentService()
   const sentiments = _.map(event.Records, (e) => service.analyseTweetSentiment(JSON.parse(e.Sns.Message)))
 
@@ -48,17 +51,18 @@ class SentimentService {
     }
 
     return this.analyser
-      .detectSentiment(_.map(tweets, (i) => i.text))
-      .then((sentiment) => {
-        this.sentiment = sentiment
+    .detectSentiment(_.map(tweets, (i) => i.text))
+    .then((sentiment) => {
+      this.sentiment = sentiment
 
-        return this.sentiment
-      })
-    }
+      return this.sentiment
+    })
+    .then(this.publishSentiment.bind(this))
+  }
 
-    publishSentiment() {
-      return this.repository.save(this.sentiment)
-    }
+  publishSentiment() {
+    return this.repository.save(this.sentiment)
+  }
 }
 
 class SentimentAnalyser {
@@ -89,11 +93,15 @@ class SentimentAnalyser {
 }
 class SentimentRepository {
   save(sentiment) {
+    console.log('publish to iot')
     return iotData.publish({
       topic: 'sentiment',
       payload: JSON.stringify(sentiment),
       qos: 0
-    }).promise()
+    }).promise().then((data) => {
+      console.log('resolved!')
+      return data
+    })
   }
 }
 
