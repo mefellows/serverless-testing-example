@@ -4,12 +4,6 @@ const AWS = require('aws-sdk')
 const _ = require('lodash')
 
 AWS.config.region = process.env.IOT_AWS_REGION
-const iotData = new AWS.IotData({
-  endpoint: process.env.IOT_ENDPOINT_HOST
-})
-const comprehend = new AWS.Comprehend({
-  region: "us-east-1"
-})
 
 // Port.
 // Consumer handler, responsible for receiving the Lambda call
@@ -51,13 +45,13 @@ class SentimentService {
     }
 
     return this.analyser
-    .detectSentiment(_.map(tweets, (i) => i.text))
-    .then((sentiment) => {
-      this.sentiment = sentiment
+      .detectSentiment(_.map(tweets, (i) => i.text))
+      .then((sentiment) => {
+        this.sentiment = sentiment
 
-      return this.sentiment
-    })
-    .then(this.publishSentiment.bind(this))
+        return this.sentiment
+      })
+      .then(this.publishSentiment.bind(this))
   }
 
   publishSentiment() {
@@ -75,6 +69,10 @@ class SentimentAnalyser {
       'Neutral': 0,
       'Mixed': 0
     }
+
+     this.comprehend = new AWS.Comprehend({
+      region: "us-east-1"
+    })
   }
 
   detectSentiment(phrases) {
@@ -82,7 +80,7 @@ class SentimentAnalyser {
       LanguageCode: 'en',
       TextList: phrases
     }
-    return comprehend
+    return this.comprehend
       .batchDetectSentiment(params).promise()
       .then((data) => {
         this.sentiment = _.reduce(data.ResultList, (acc, s) => _.mergeWith(acc, s.SentimentScore, (a, b) => a + b), this.sentiment)
@@ -92,16 +90,18 @@ class SentimentAnalyser {
   }
 }
 class SentimentRepository {
+  constructor() {
+    this.iotData = new AWS.IotData({
+      endpoint: process.env.IOT_ENDPOINT_HOST
+    })
+  }
   save(sentiment) {
-    console.log('publish to iot')
-    return iotData.publish({
+    return this.iotData.publish({
       topic: 'sentiment',
       payload: JSON.stringify(sentiment),
       qos: 0
-    }).promise().then((data) => {
-      console.log('resolved!')
-      return data
     })
+    .promise()
   }
 }
 

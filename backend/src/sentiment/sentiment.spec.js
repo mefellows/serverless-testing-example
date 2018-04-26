@@ -6,11 +6,25 @@ const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
 const expect = chai.expect
 const AWS = require('aws-sdk-mock')
-var event = require('./data/sns.json')
+
 chai.use(chaiAsPromised)
 
 describe.only("Sentiment - Lambda function", () => {
   context("#handler", () => {
+    const sentiment = {
+      ResultList: [{
+        "SentimentScore": {
+          'Positive': 0,
+          'Negative': 0,
+          'Neutral': 0,
+          'Mixed': 0
+        }
+      }]
+    };
+    AWS.mock('IotData', 'publish', 'sent!')
+    AWS.mock('Comprehend', 'batchDetectSentiment', sentiment)
+    const event = require('./data/sns.json')
+
     describe('when we get an invalid event', () => {
       it('should throw and error', () => {
         expect(() => {
@@ -21,23 +35,9 @@ describe.only("Sentiment - Lambda function", () => {
 
     describe('when we get a valid event', () => {
       it('should execute the lambda successfully', (done) => {
-        AWS.mock('IotData', 'publish', () => Promise.resolve())
-        AWS.mock('Comprehend', 'batchDetectSentiment', {
-          ResultList: [{
-            "SentimentScore": {
-              'Positive': 0,
-              'Negative': 0,
-              'Neutral': 0,
-              'Mixed': 0
-            }
-          }]
-        })
-        const callback = (e) => {
-          if (e) {
-            console.log(e)
-            fail("Expected callback without error")
-          }
-          done()
+        const callback = (e, b) => {
+          if (e) done(new Error("Expected callback without error"))
+          else done()
         }
         handler(event, null, callback)
       })

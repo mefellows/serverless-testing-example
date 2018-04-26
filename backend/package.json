@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "if [ -d 'pacts' ]; then rm -rf pacts; fi",
-    "test": "mocha src/**/*.spec.js",
+    "test": "mocha --timeout 10000 src/**/*.spec.js",
     "test:pact": "npm run clean && mocha src/**/*.spec.js",
     "test:publish": "node ../publish.js"
   },
