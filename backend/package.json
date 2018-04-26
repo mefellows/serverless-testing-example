@@ -7,6 +7,7 @@
     "clean": "if [ -d 'pacts' ]; then rm -rf pacts; fi",
     "test": "mocha --timeout 5000 src/**/*.spec.js",
     "test:twitter": "mocha --timeout 5000 src/twitterProvider/twitterProvider.spec.js",
+    "test:sentiment": "mocha --timeout 5000 src/sentiment/sentiment.spec.js",
     "test:sentiment:pact:consumer": "mocha --timeout 5000 src/sentiment/consumerPact.spec.js",
     "test:sentiment:pact:provider": "mocha --timeout 5000 src/sentiment/sentimentProviderPact.spec.js",
     "test:sentiment:pact": "npm run clean && npm run test:sentiment:pact:consumer && npm run test:publish && npm run test:sentiment:pact:provider",

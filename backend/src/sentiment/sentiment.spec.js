@@ -11,6 +11,7 @@ chai.use(chaiAsPromised)
 
 describe("Sentiment - Lambda function", () => {
   context("#handler", () => {
+    // Mock out SDK calls
     const sentiment = {
       ResultList: [{
         "SentimentScore": {
@@ -23,6 +24,8 @@ describe("Sentiment - Lambda function", () => {
     };
     AWS.mock('IotData', 'publish', 'sent!')
     AWS.mock('Comprehend', 'batchDetectSentiment', sentiment)
+
+    // Mock out handler data
     const event = require('./data/sns.json')
 
     describe('when we get an invalid event', () => {
