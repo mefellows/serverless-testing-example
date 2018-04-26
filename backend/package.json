@@ -5,9 +5,14 @@
   "license": "MIT",
   "scripts": {
     "clean": "if [ -d 'pacts' ]; then rm -rf pacts; fi",
-    "test": "mocha --timeout 10000 src/**/*.spec.js",
+    "test": "mocha --timeout 5000 src/**/*.spec.js",
+    "test:sentiment:pact:consumer": "mocha --timeout 5000 src/sentiment/consumerPact.spec.js",
+    "test:sentiment:pact:provider": "mocha --timeout 5000 src/sentiment/sentimentProviderPact.spec.js",
+    "test:sentiment:pact": "npm run clean && npm run test:sentiment:pact:consumer && npm run test:publish && npm run test:sentiment:pact:provider",
     "test:pact": "npm run clean && mocha src/**/*.spec.js",
-    "test:publish": "node ../publish.js"
+    "test:publish": "node ../publish.js",
+    "localstack": "./scripts/localstack.sh",
+    "arch": "./scripts/arch.sh"
   },
   "dependencies": {
     "aws-sdk": "^2.218.1",
@@ -19,7 +24,7 @@
     "twit": "^2.2.9"
   },
   "devDependencies": {
-    "@pact-foundation/pact": "^6.0.0-alpha.12",
+    "@pact-foundation/pact": "^6.0.0-alpha.10",
     "aws-sdk-mock": "^2.0.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",

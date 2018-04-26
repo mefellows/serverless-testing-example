@@ -25,7 +25,11 @@ const SNSMessageHandler = (event) => {
     throw new Error("No records passed in to handler")
   }
   const service = new SentimentService()
-  const sentiments = _.map(event.Records, (e) => service.analyseTweetSentiment(JSON.parse(e.Sns.Message)))
+  const sentiments = _.map(event.Records, (e) => {
+    service
+      .analyseTweetSentiment(JSON.parse(e.Sns.Message))
+      .then(() => service.publishSentiment())
+  })
 
   return Promise.all(sentiments)
 }
@@ -40,6 +44,8 @@ class SentimentService {
   }
 
   analyseTweetSentiment(tweets) {
+    console.log('analysing tweet sentiment!')
+
     if (!tweets) {
       throw new Error("Invalid request, missing fields")
     }
@@ -51,7 +57,6 @@ class SentimentService {
 
         return this.sentiment
       })
-      .then(this.publishSentiment.bind(this))
   }
 
   publishSentiment() {

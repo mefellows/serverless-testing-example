@@ -9,7 +9,7 @@ const AWS = require('aws-sdk-mock')
 
 chai.use(chaiAsPromised)
 
-describe.only("Sentiment - Lambda function", () => {
+describe("Sentiment - Lambda function", () => {
   context("#handler", () => {
     const sentiment = {
       ResultList: [{
