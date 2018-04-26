@@ -19,10 +19,11 @@ import RealtimeClient from './RealtimeClient';
 import './App.css';
 import _ from 'lodash';
 import Filter from 'bad-words';
+import { handleSentiment } from './SentimentHandler';
 
 const filter = new Filter({ placeHolder: '🌩'});
 filter.addWords(['Google', 'Kube', 'Kubernetes', 'server', 'serverless']);
-filter.removeWords('hell');
+filter.removeWords('hell', 'hello');
 
 const getClientId = () => 'web-client:' + Guid.raw();
 
@@ -242,7 +243,7 @@ class App extends Component {
                     } else if (topic === 'client-disconnected') {
                       this.setState({ users: this.state.users.filter(user => user.clientId !== message.clientId) })
                     } else if (topic === 'sentiment') {
-                      this.setState({ sentiment: message })
+                      this.setState({ sentiment: handleSentiment(message) })
                     } else if (topic === 'tweets') {
                       const currentTweets = _.map(this.state.tweets, 'id');
                       const newTweets = _.filter(message, (t) => !currentTweets.includes(t.id) )

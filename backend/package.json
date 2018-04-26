@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "if [ -d 'pacts' ]; then rm -rf pacts; fi",
+    "clean:frontend": "if [ -d '../frontend/pacts' ]; then rm -rf ../frontend/pacts; fi",
     "test": "mocha --timeout 5000 src/**/*.spec.js",
     "test:twitter": "mocha --timeout 5000 src/twitterProvider/twitterProvider.spec.js",
     "test:sentiment": "mocha --timeout 5000 src/sentiment/sentiment.spec.js",

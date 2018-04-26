@@ -56,7 +56,8 @@ class TwitterScraper {
 
   getTweets(lastItem) {
     return t.get('search/tweets', {
-      q: `${MAGIC_KEYWORD} since_id:${lastItem}`,
+      q: `${MAGIC_KEYWORD} since_id:0`,
+      // q: `${MAGIC_KEYWORD} since_id:${lastItem}`,
       count: this.count
     }).then((res) => {
       const tweets = []

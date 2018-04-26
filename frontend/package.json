@@ -22,11 +22,12 @@
   },
   "scripts": {
     "clean": "if [ -d 'pacts' ]; then rm -rf pacts; fi",
+    "clean:backend": "if [ -d '../backend/pacts' ]; then rm -rf ../backend/pacts; fi",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "test:pact": "npm run clean && mocha tests/*.spec.js",
+    "test:pact": "npm run clean && npm run clean:backend && mocha tests/sentimentPact.spec.js",
     "test:publish": "node ../publish.js"
   },
   "proxy-remote": "https://fn6ny4k8ca.execute-api.us-east-1.amazonaws.com/dev/iot-presigned-url",
