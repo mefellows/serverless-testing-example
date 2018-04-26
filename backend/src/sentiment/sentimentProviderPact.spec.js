@@ -6,7 +6,7 @@ const path = require('path')
 const { SentimentService } = require('./index')
 const AWS = require('aws-sdk-mock')
 
-describe.only('Sentiment provider tests', () => {
+describe('Sentiment provider tests', () => {
   const sentiment = {
     ResultList: [{
       "SentimentScore": {
