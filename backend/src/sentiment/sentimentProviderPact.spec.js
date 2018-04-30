@@ -13,7 +13,7 @@ describe('Sentiment provider tests', () => {
         'Positive': 0, // Modify this to watch the verification break!
         'Negative': 0,
         'Neutral': 0,
-        'Mixed': 0
+        'Mixed': "oeu"
       }
     }]
   };

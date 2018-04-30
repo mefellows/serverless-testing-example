@@ -7,14 +7,21 @@ AWS.config.region = process.env.IOT_AWS_REGION
 
 // Port.
 // Consumer handler, responsible for receiving the Lambda call
-// and handling
+// and delegating to the Lambda Adapter
 const handler = (event, context, callback) => {
-  console.log("Received event from SNS")
+  switch(messageSource(event)) {
+    case "aws:sns":
+      SNSMessageHandler(event)
+      .then(() => callback(null))
+      .catch(callback)
+      break
 
-  SNSMessageHandler(event)
-    .then(() => callback(null))
-    .catch(callback)
+    default:
+      callback(new Error(`Unrecognised event type: "${messageSource(event)}"`))
+  }
 }
+
+const messageSource = (e) => (e.Records.length > 0) ? e.Records[0].EventSource : "unknown"
 
 // Adapter / Anti-corruption layer.
 // Resonsible for extracting message from SNS and converting into domain model
@@ -94,10 +101,11 @@ class SentimentAnalyser {
       })
   }
 }
+
 class SentimentRepository {
   constructor() {
     this.iotData = new AWS.IotData({
-      endpoint: process.env.IOT_ENDPOINT_HOST
+      endpoint: process.env.IOT_ENDPOINT_HOST || "https://ap-southeast-2.iot.amazonaws.com"
     })
   }
   save(sentiment) {
