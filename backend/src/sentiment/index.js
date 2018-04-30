@@ -21,7 +21,7 @@ const handler = (event, context, callback) => {
   }
 }
 
-const messageSource = (e) => (e.Records.length > 0) ? e.Records[0].EventSource : "unknown"
+const messageSource = (e) => (e &&e.Records && e.Records.length > 0) ? e.Records[0].EventSource : "unknown"
 
 // Adapter / Anti-corruption layer.
 // Resonsible for extracting message from SNS and converting into domain model
@@ -32,11 +32,9 @@ const SNSMessageHandler = (event) => {
     return Promise.reject(new Error("No records passed in to handler"))
   }
   const service = new SentimentService()
-  const sentiments = _.map(event.Records, (e) => {
-    service
+  const sentiments = _.map(event.Records, (e) => service
       .analyseTweetSentiment(JSON.parse(e.Sns.Message))
-      .then(() => service.publishSentiment())
-  })
+      .then(() => service.publishSentiment()))
 
   return Promise.all(sentiments)
 }

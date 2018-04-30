@@ -24,7 +24,7 @@ describe("Sentiment - Lambda function", () => {
         }
       }]
     }
-    AWS.mock('IotData', 'publish', 'sent!')
+    AWS.mock('IotData', 'publish', 'published!')
     AWS.mock('Comprehend', 'batchDetectSentiment', sentiment)
 
     // 2. Test Handler interface with different events
@@ -32,8 +32,8 @@ describe("Sentiment - Lambda function", () => {
     describe('when we get an invalid event', () => {
       it('should throw an error', () => {
         expect(() => {
-          handler(null)
-        }).to.throw(Error, "No records passed in to handler")
+          handler(null, null, (e) => {throw e})
+        }).to.throw(Error, `Unrecognised event type: "unknown"`)
       })
     })
 
@@ -51,7 +51,7 @@ describe("Sentiment - Lambda function", () => {
       describe("with an SNS message containing a tweet", () => {
         it("should execute the lambda successfully", done => {
           const event = require('./data/sns.json')
-          const callback = (done) => (e) => (e) ? done(e) : done()
+          const callback = (e) => (e) ? done(e) : done()
           handler(event, null, callback)
         })
       })
