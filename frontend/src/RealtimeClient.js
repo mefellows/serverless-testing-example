@@ -30,7 +30,7 @@ export default (clientId, username) => {
 
   const clientWrapper = {};
   clientWrapper.connect = () => {
-    return request('https://mnf6r7nai4.execute-api.us-east-1.amazonaws.com/dev/iot-presigned-url')
+    return request('https://hukofkpc67.execute-api.us-east-1.amazonaws.com/dev/iot-presigned-url')
       // return request('/iot-presigned-url')
       .then(response => {
         client = mqtt.connect(response.body.url, options);

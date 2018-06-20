@@ -2,13 +2,17 @@
 
 const AWS = require('aws-sdk')
 const _ = require('lodash')
+const middy = require('middy')
+const { cors } = require('middy/middlewares')
+const { authenticationMiddleware } = require('../lib/middleware/authentication')
+const { timingMiddleware } = require('../lib/middleware/timing')
 
 AWS.config.region = process.env.IOT_AWS_REGION
 
 // Port.
 // Consumer handler, responsible for receiving the Lambda call
 // and delegating to the Lambda Adapter
-const handler = (event, context, callback) => {
+const api = (event, context, callback) => {
   switch(messageSource(event)) {
     case "aws:sns":
       SNSMessageHandler(event)
@@ -115,6 +119,13 @@ class SentimentRepository {
     .promise()
   }
 }
+
+// Wrap the handler with middleware
+const handler = middy(api)
+
+handler
+  .use(timingMiddleware())
+  .use(authenticationMiddleware())
 
 module.exports = {
   handler,

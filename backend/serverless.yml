@@ -39,7 +39,7 @@ provider:
         - "comprehend:*"
   environment:
     TOPIC_ARN: { "Fn::Join":  ["", ["arn:aws:sns:us-east-1:", { "Ref": "AWS::AccountId" }, ":pact-events"] ] }
-    MAGIC_KEYWORD: "#awsmelb"
+    MAGIC_KEYWORD: "#awsagility"
     # NOTE: These must be present in your shell!
     TWITTER_CONSUMER_KEY: ${env:TWITTER_CONSUMER_KEY}
     TWITTER_CONSUMER_SECRET: ${env:TWITTER_CONSUMER_SECRET}

@@ -13,7 +13,7 @@ describe('Sentiment provider tests', () => {
         'Positive': 0, // Modify this to watch the verification break!
         'Negative': 0,
         'Neutral': 0,
-        'Mixed': "oeu"
+        'Mixed': 0
       }
     }]
   };
@@ -36,16 +36,16 @@ describe('Sentiment provider tests', () => {
     providerVersion: '1.0.0',
 
     // For local validation
-    // pactUrls: [path.resolve(process.cwd(), 'pacts', 'awssummiteersentimentsnsconsumer-awssummiteersentimentsnsprovider.json')],
+    pactUrls: [path.resolve(process.cwd(), 'pacts', 'awssummiteerweb-awssummiteersentimentsnsprovider.json')],
 
     // Uncomment to use the broker
-    pactBrokerUrl: 'https://test.pact.dius.com.au/',
-    pactBrokerUsername: 'dXfltyFMgNOFZAxr8io9wJ37iUpY42M',
-    pactBrokerPassword: 'O5AIZWxelWbLvqMd8PkAVycBJh2Psyg1',
-    publishVerificationResult: true,
+    // pactBrokerUrl: 'https://test.pact.dius.com.au/',
+    // pactBrokerUsername: 'dXfltyFMgNOFZAxr8io9wJ37iUpY42M',
+    // pactBrokerPassword: 'O5AIZWxelWbLvqMd8PkAVycBJh2Psyg1',
+    // publishVerificationResult: true,
 
     // Tag the contract
-    tags: ['latest'],
+    // tags: ['latest'],
   })
 
   describe('send an event', () => {

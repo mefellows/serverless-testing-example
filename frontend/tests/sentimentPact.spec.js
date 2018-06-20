@@ -6,6 +6,7 @@ const path = require("path");
 
 // Pretent to be the consumer here
 const { handleSentiment } = require('../src/SentimentHandler');
+process.env.IOT_ENDPOINT_HOST = "https://ap-southeast-2.iot.amazonaws.com";
 
 describe("Sentiment - Consumer Tests", () => {
   const messagePact = new MessageConsumer({
@@ -15,9 +16,6 @@ describe("Sentiment - Consumer Tests", () => {
   });
 
   describe("receive new sentiments", () => {
-    process.env.IOT_ENDPOINT_HOST = "https://ap-southeast-2.iot.amazonaws.com";
-console.log(process.env.IOT_ENDPOINT_HOST)
-
     it("should be able to receive a new sentiment from the queue", () => {
       return messagePact
         .expectsToReceive("a sentiment update")

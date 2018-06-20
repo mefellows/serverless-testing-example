@@ -2,6 +2,10 @@
 
 const Twit = require('twit')
 const AWS = require('aws-sdk')
+const middy = require('middy')
+const { cors } = require('middy/middlewares')
+const { authenticationMiddleware } = require('../lib/middleware/authentication')
+const { timingMiddleware } = require('../lib/middleware/timing')
 const dynamodb = new AWS.DynamoDB({
   endpoint: process.env.DYNAMO_ENDPOINT_HOST
 })
@@ -16,12 +20,12 @@ const t = new Twit({
   timeout_ms: 60 * 1000, // optional HTTP request timeout to apply to all requests.
 })
 const TOPIC_ARN = process.env.TOPIC_ARN
-const MAGIC_KEYWORD = process.env.MAGIC_KEYWORD || "#awsmelb"
+const MAGIC_KEYWORD = "#AWSAgility"
 
 // Provider handler. Runs on a scheduled basis, extracting from Twitter
 // and sending data to an SNS queue
 // NOTE: Our handler here is just the trigger, none of the values are used!
-const handler = (event, context, callback) => {
+const api = (event, context, callback) => {
   console.log(`Running Twitter scraper for keyword ${MAGIC_KEYWORD}`)
 
   const repository = new CheckpointRepository()
@@ -41,10 +45,10 @@ class TwitterScraper {
   }
 
   run() {
-    return this.getLastTwitterId()
-      .then(this.getTweets.bind(this))
+    // return this.getLastTwitterId()
+      return this.getTweets(0)
       .then(this.publishTweets.bind(this))
-      .then(this.updateCheckpoint.bind(this))
+      // .then(this.updateCheckpoint.bind(this))
   }
 
   getLastTwitterId() {
@@ -134,8 +138,15 @@ class CheckpointRepository {
   }
 }
 
+const handler = middy(api)
+
+handler
+  .use(timingMiddleware())
+  .use(authenticationMiddleware())
+
 module.exports = {
   handler,
+  api,
   CheckpointRepository,
   TwitterScraper,
 }
