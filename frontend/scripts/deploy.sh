@@ -5,7 +5,7 @@
 
 step "Running 'AWS stack create/update'"
 stack_name="${APPLICATION_NAME}"
-bucket_name="${APPLICATION_NAME}"
+bucket_name="awslounge"
 
 if [ ! -d ./build ]; then
   log "ERROR: No build artifacts to deploy (no files in ./out)"

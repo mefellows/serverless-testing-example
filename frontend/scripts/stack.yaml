@@ -4,7 +4,7 @@ Parameters:
   S3BucketName:
     Type: String
     Description: S3 Bucket Name to deploy to
-    Default: aws-summiteers
+    Default: awslounge
   DomainName:
     Type: String
     Description: S3 Bucket Name to deploy to
@@ -22,45 +22,42 @@ Resources:
           Value: Matt Fellows
         - Key: Name
           Value: aws-summiteers
-  WebsiteCloudfront:
-    Type: AWS::CloudFront::Distribution
-    Properties:
-      DistributionConfig:
-        Aliases:
-          - !Ref 'DomainName'
-        Comment: CloudFront distribution for the AWS Lounge
-        DefaultCacheBehavior:
-          AllowedMethods:
-            - HEAD
-            - GET
-          ForwardedValues:
-            Cookies:
-              Forward: none
-            Headers: []
-            QueryString: 'false'
-          SmoothStreaming: 'false'
-          TargetOriginId: default-origin
-          ViewerProtocolPolicy: allow-all
-        DefaultRootObject: index.html
-        CustomErrorResponses:
-        - ErrorCode: '404'
-          ResponsePagePath: "/index.html"
-          ResponseCode: '200'
-          ErrorCachingMinTTL: '30'
-        - ErrorCode: '403'
-          ResponsePagePath: "/index.html"
-          ResponseCode: '200'
-          ErrorCachingMinTTL: '30'
-        Enabled: 'true'
-        Origins:
-        - DomainName: !GetAtt WebsiteBucket.DomainName
-          Id: 'default-origin'
-          S3OriginConfig: {}
-        PriceClass: PriceClass_All
+  # WebsiteCloudfront:
+  #   Type: AWS::CloudFront::Distribution
+  #   Properties:
+  #     DistributionConfig:
+  #       # Aliases:
+  #       #   - !Ref 'DomainName'
+  #       Comment: CloudFront distribution for the AWS Lounge
+  #       DefaultCacheBehavior:
+  #         AllowedMethods:
+  #           - HEAD
+  #           - GET
+  #         ForwardedValues:
+  #           Cookies:
+  #             Forward: none
+  #           Headers: []
+  #           QueryString: 'false'
+  #         SmoothStreaming: 'false'
+  #         TargetOriginId: default-origin
+  #         ViewerProtocolPolicy: allow-all
+  #       DefaultRootObject: index.html
+  #       CustomErrorResponses:
+  #       - ErrorCode: '404'
+  #         ResponsePagePath: "/index.html"
+  #         ResponseCode: '200'
+  #         ErrorCachingMinTTL: '30'
+  #       - ErrorCode: '403'
+  #         ResponsePagePath: "/index.html"
+  #         ResponseCode: '200'
+  #         ErrorCachingMinTTL: '30'
+  #       Enabled: 'true'
+  #       Origins:
+  #       - DomainName: !GetAtt WebsiteBucket.DomainName
+  #         Id: 'default-origin'
+  #         S3OriginConfig: {}
+  #       PriceClass: PriceClass_All
 Outputs:
   WebsiteURL:
     Description: S3 Bucket Website URL
     Value: !GetAtt 'WebsiteBucket.WebsiteURL'
-  DomainName:
-    Description: Cloudfront distribution domain
-    Value: !GetAtt 'WebsiteCloudfront.DomainName'
